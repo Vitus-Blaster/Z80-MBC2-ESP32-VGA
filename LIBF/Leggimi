@@ -1,2 +1,4 @@
 Questo è il deposito della libreria LIBF con i moduli più aggiornati.
+La cartella contiene anche il compilatore e i programmi necessari alla compilazione.
+Per compilare la libreria occorre eseguire libf.sub.
 
