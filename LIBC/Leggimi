@@ -6,6 +6,6 @@ I sorgenti sono in linguaggio assembler Z80 e in linguaggio C e provengono dai s
 Per creare la libreria avete a disposizione libc.sub che "sottomette" al CP/M le singole stringhe di comando.
 Il tempo di compilazione è lungo. Con yaze-ag bastano poche decine di secondi, invece con Z80-mbc2 a 8 MHz
 ci voglio 5 ore buone.
-Github non permette l'upload di più di 100 file in un cartella.
-Ve li divido in sottogruppi, voi dopo mettete tutto in un solo drive disk CP/M e avviate la compilazione.
+Github non permette l'upload di più di 100 file in un cartella quindi ho compresso i sorgenti in un file zip.
+
 
