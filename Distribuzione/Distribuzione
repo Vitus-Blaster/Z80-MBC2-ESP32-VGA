@@ -1,1 +1,4 @@
 
+In questa cartella c'è il compilatore C della Hi-Tech modificato. L'ho battezzato C3 appunto perchè è alla terza versione.
+Oltre l'eseguibile e i moduli programma di parsing, ottimizzazione etc. ho messo anche il sorgente C del compilatore portato alla terza versione.
+Le versioni delle librerie sono le più recenti e troverete come compilarvele dai sorgenti nelle cartelle LIBC, LIBF e LIBV.
