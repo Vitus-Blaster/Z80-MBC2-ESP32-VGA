@@ -18,22 +18,23 @@ Da come si vede nel manuale i parametri sono passati nello stack al di sopra del
 Quando una funzione in assembler è invocata dal programma in linguaggio C gli argomenti sono messi nello stack in ordine
 inverso. Abbiamo cioè che il primo argomento è nell'indirizzo di memoria più basso. Lo stesso accade per una routine in
 linguaggio C invocata da un programma in assembler.
-Nel caso di un solo parametro abbiamo:
+Nel caso di un solo parametro floating point, abbiamo:
 			------------
 			*   segno   *	1 bit
 			*-----------*
 			* esponente *	7 bit
 			*-----------*
 			* mantissa  *	24 bit normalizzato
-      -------------
+                        -------------
  Il numero e' memorizzato con il segno nel byte piu' alto e la mantissa nel byte piu' basso.
+ Per raccogliere il parametro dobbiamo usare il puntatore ix aggiornato con il puntatore stack più un offset.
  L'offset, rispetto allo stack pointer, da adottare vale 6 (2 byte per indirizzo di ritorno e 2 byte per ix)
  e altri 2 per il primo push che salva l'indice ix:
  
- psect	text, global
- global	_programma, prg1, prg2
+ 	psect	text, global
+ 	global	_programma, prg1, prg2
  
- arg     equ     6       ; offeset primo argomento
+ 	arg     equ     6       ; offeset primo argomento
 _programma:
  		push	ix
 		ld		ix,0
@@ -44,9 +45,9 @@ _programma:
 		ld		e,(ix+arg+2)    ; byte medio mantissa
 		ld		d,(ix+arg+3)    ; byte basso mantissa
      ....
- Il ritorno del risultato è in HL DE.
+ Il ritorno del risultato della elaborazione è in HL DE.
  
  Nel caso di tipo word il valore torna in HL, long word in HL DE con la parte alta in HL.
- Gli interi sono in L col segno in H.
+ Gli interi e sono in L col segno eventuale in H.
  
  
