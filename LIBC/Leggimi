@@ -1,0 +1,8 @@
+Ecco i file necessari a compilare la libreria LIBC alla ultima versione. Nella cartella c'è anche il compilatore.
+Importante: non modificate l'ordine di aggregazione dei moduli oggetto nel file comando libc.sub. 
+Per una compilazione corretta i moduli devono essere trovati in libreria nel giusto ordine per il richiamo.
+Altrimenti avreste moduli oggetto "orfani" di riferimenti.
+I sorgenti sono in linguaggio assembler Z80 e in linguaggio C e provengono dai sottogruppi CPM, STDIO, GEN e LIBC.
+Per creare la libreria avete a disposizione libc.sub che "sottomette" al CP/M le singole stringhe di comando.
+Il tempo di compilazione è lungo. Con yaze-ag bastano poche decine di secondi, invece con Z80-mbc2 a 8 MHz
+ci voglio 5 ore buone.
