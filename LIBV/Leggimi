@@ -1,0 +1,2 @@
+Le librerie LIBC e LIBF non sono complete come prevede ANSI-C, per cui questa libreria includerà i moduli 
+mancanti man mano che li produco.
