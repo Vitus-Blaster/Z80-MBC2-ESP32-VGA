@@ -1,6 +1,6 @@
 Il primo modulo di libreria che ho scritto è stato FMOD.
 L'ho scritto in C e compilato con Hi-tech C:
-c3 -v -o -c fmod.c -lf
+			c3 -v -o -c fmod.c -lf
 L'opzione -c indica al compilatore di non cancellare il file obj intermedio.
 Questo file fmod.obj è quello che bisogna poi aggiungere alla libreria.
 Per non creare ulteriore confusione con la libreria LIBF.LIB ho pensato di creare
@@ -57,6 +57,7 @@ double x, y;
 
 	return mod;                     /* restituisce il modulo        */
 }
+
 
 Questo modulo l'ho ripreso volendo scriverlo in assembler Z80. Molto hanno aiutato
 le routine contenute in float.as. Le spiegazioni, come nel programma precedente, sono date riga per riga:
@@ -217,6 +218,10 @@ memz:	deff	0.0				;
 memx:	deff	0.0				;
 over:	deff	1.6777217e07			; infinito
 zero:	deff	0.0				;
+
+La compilazione di un modulo in assembler da aggiungere in libreria è:
+		zas fmod.z80
+Poi 		libr r libv.lib fmod.obj
 
 
 
