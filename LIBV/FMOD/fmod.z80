@@ -145,7 +145,7 @@ fine1:
         res		7, h		    ; altrimenti risultato positivo
 fine:	
 		ld      sp,ix			; procedura di uscita
-		pop		iy
+		pop		ix
 		ret
 zneg:		
 		set		7, h			; risultato negativo
