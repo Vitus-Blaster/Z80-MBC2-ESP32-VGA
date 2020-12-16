@@ -38,16 +38,37 @@ Nel caso di un solo parametro floating point, abbiamo:
 _programma:
  		push	ix
 		ld		ix,0
-		add		ix,sp			      ; punta all'argomento
-		                      ; carica l'argomento in HLDE
+		add		ix,sp		; punta all'argomento
+		                      		; carica l'argomento in HLDE
 		ld		l,(ix+arg+0)    ; byte alto mantissa
-		ld		h,(ix+arg+1)	  ; segno + esponente
+		ld		h,(ix+arg+1)	; segno + esponente
 		ld		e,(ix+arg+2)    ; byte medio mantissa
 		ld		d,(ix+arg+3)    ; byte basso mantissa
      ....
  Il ritorno del risultato della elaborazione è in HL DE.
  
  Nel caso di tipo word il valore torna in HL, long word in HL DE con la parte alta in HL.
- Gli interi e sono in L col segno eventuale in H.
+ Gli interi sono in L col segno eventuale in H. 
+ I puntatore a carattere occupano 2 byte e sono caricati in HL, ad esempio vediamo un modulo
+ che riceve un * char nel quale scrive '0', '1', il terminatore di stringa '\0' e ritorna 
+ in HL il puntatore al vettore ricevuto:
+ 
+  		push	ix
+		ld	ix,0
+		add	ix,sp		; punta all'argomento
+		ld	l,(ix+arg+0)    ; byte alto indirizzo
+		ld	h,(ix+arg+1)	; byte basso indirizzo
+		
+		ld	(hl), 48	; '0'
+		inc	hl
+		ld	(hl), 49	; '1'
+		inc	hl
+		ld	(hl), 0		; terminatore di stringa
+		dec	hl
+		dec	hl		; punta al primo carattere
+		ld	sp, ix
+		pop	iy
+		ret
+		
  
  
