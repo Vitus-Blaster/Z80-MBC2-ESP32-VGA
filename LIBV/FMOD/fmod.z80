@@ -1,0 +1,157 @@
+; double fmod(double z, double x)
+; ritorna il resto della divisione di z per x
+;
+; fmod(z,x) = z - x * floor(z/x)
+; se x>0 allora  0 <= fmod(z,x) < x
+; se x<0 allora -x < fmod(z,x) <= 0
+;
+; Formato di un numero floating point
+;			------------
+;			*   segno   *	1 bit
+;			*-----------*
+;			* esponente *	7 bit
+;			*-----------*
+;			* mantissa  *	24 bit normalizzato
+;                       -------------
+; Il numero e' memorizzato con il segno nel byte piu' alto e
+; la mantissa nel byte piu' basso
+
+	psect	text, global
+	global	_fmod, round, flsub, flmul, fldiv, fladd, fpnorm, _floor
+
+		arg     equ     6       ; offeset primo argomento
+_fmod:
+		push	ix
+		ld		ix,0
+		add		ix,sp			; punta all'argomento
+		
+		ld		a, 00h			;
+		ld		(flagz), a		; flagz contiene 0
+								
+								; carica il primo argomento (Z) in HLDE
+		ld		l,(ix+arg+0)    ; byte alto mantissa
+		ld		h,(ix+arg+1)	; segno + esponente
+		ld		e,(ix+arg+2)    ; byte medio mantissa
+		ld		d,(ix+arg+3)    ; byte basso mantissa
+	    call	fpnorm			; lo normalizza
+
+		ld		a, l			; controlla se mantissa = 0
+		or		d              	; ovvero L D E contengono zeri
+		or		e
+		jp		z, numzero		; si, termina con risultato zero
+		
+								; test se Z negativo		
+		bit		7, h			; 1 = segno negativo, 0 = segno positivo
+		jp		z, avanti		; se bit7=0 -> flag z=1 quindi salta avanti
+		ld		a, 01h			; se bit=1 aggiorna il flag
+		ld	(flagz), a      	; di Z negativo
+avanti:
+		res		7, h			; 0 = segno positivo di Z
+		ld		(memz), de		; salva Z
+		ld		(memz+2), hl
+								; carica il secondo argomento (X) in HL DE
+		ld      l,(ix+arg+4)    ; byte alto mantissa
+       	ld      h,(ix+arg+5)    ; segno + esponente
+       	ld      e,(ix+arg+6)    ; byte medio mantissa
+       	ld      d,(ix+arg+7)    ; byte basso mantissa
+
+		call	fpnorm			; lo normalizza
+
+		ld		a, l			; controlla se mantissa = 0
+		or		d              	; ovvero L D E contengono zeri
+		or		e
+		jp		z, denzero		; si, termina con risultato zero
+		res		7, h			; imposta X positivo 
+		ld		(memx), de		; salva X
+		ld		(memx+2), hl
+
+		push	hl				; mette X nello stack
+		push	de
+		
+
+;	Divisione float di libreria fldiv. Il numero in HLDE e' diviso
+;	con il numero che risiede nello stack sotto all'indirizzo
+;	di ritorno.
+;   	Il puntatore allo stack torna corretto e il risultato è in HL DE.
+;	Vedere il sorgente round in float.as
+;			( z / x )
+
+		call	fldiv
+	
+;	Arrotonda il numero in HLDE all'unita' inferiore
+;	floor.c e' in libf.lib: double floor(double)
+;			floor( z / x )
+
+		push 	hl				; passa l'argomento alla routine
+		push	de				; tramite stack
+		call	_floor			; floor(y)
+							; restituisce il risultato in HL DE
+;
+;	Moltiplicazione floating point flmul. Il numero in HL DE e'
+;	moltiplicato con il numero che risiede nello stack sotto
+; 	all'indirizzo di ritorno.
+;   	Il puntatore allo stack torna corretto e il risultato è in HL DE.
+;   	Vedere il sorgente in flmul in float.as
+;			x * floor( z / x )
+
+		push	hl				; salva floor(z/x)
+		push 	de      		; nello stack
+
+		ld		de, (memx)		; recupera X
+		ld		hl, (memx+2)
+
+       	call	flmul			; risultato in HL DE
+
+;	Sottrazione floating point flsub. Il valore nello stack
+;	e' sottratto da HL DE:  z - x = z + (-x)
+;   	Vedere il sorgente in flsub in float.as
+;           z - x * floor( z / x )
+
+		push	hl				; salva x*(floor(z/x))
+		push	de				; nello stack
+
+		ld		de, (memz)		; recupera Z
+		ld		hl, (memz+2)
+
+		call	flsub
+								; in HL DE abbiamo il risultato di fmod
+        jp		fine1			; vai alla parte del controllo segno
+denzero:						; se denominatore nullo
+		ld		de, (over)		; mette il valore 
+		ld		hl, (over+2)		; floating point massimo
+		jp      fine			; ritorno in HL DE
+numzero:
+		ld		de, (zero)		; mette il valore 
+		ld		hl, (zero+2)		; floating point massimo
+		jp      fine			; ritorno in HL DE			
+;    	 -------------------
+;	| Z | X | operazione|
+;    	 -------------------
+;	| 0 | 0 |  res 7, h |
+;    	 -------------------
+;	| 0 | 1 |  res 7, h |  
+;    	 -------------------
+;	| 1 | 1 |  set 7, h |
+;    	 -------------------
+;	| 1 | 0 |  set 7, h |
+;    	 -------------------
+;   notiamo che il segno del risultato è dato dal segno di Z:
+;   * Z positivo risultato positivo
+;   * Z negativo risultato negativo		
+fine1:
+		ld		a, (flagz)		; 
+		or		a				; 
+		jp		nz, zneg		; flagz=1 -> Z negativo
+        res		7, h		    ; altrimenti risultato positivo
+fine:	
+		ld      sp,ix			; procedura di uscita
+		pop		iy
+		ret
+zneg:		
+		set		7, h			; risultato negativo
+		jp		fine
+flagz:	defb	0				;
+memz:	deff	0.0				;
+memx:	deff	0.0				;
+over:	deff	1.6777217e07	; infinito
+zero:	deff	0.0				;
