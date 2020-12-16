@@ -1,0 +1,60 @@
+Il primo modulo di libreria che ho scritto è stato FMOD.
+L'ho scritto in C e compilato con Hi-tech C:
+c3 -v -o -c fmod.c -lf
+L'opzione -c indica al compilatore di non cancellare il file obj intermedio.
+Questo file fmod.obj è quello che bisogna poi aggiungere alla libreria.
+Per non creare ulteriore confusione con la libreria LIBF.LIB ho pensato di creare
+un'altra libreria dove agggiungere man mano i moduli previsti in ANSI-C ma assenti
+in LIBF.LIB:
+libr r libv.lib fmod.obj
+L'opzione 'r' sta per 'replace', se un modulo da rimpiazzare non esiste nella
+libreria allora lo agggiunge in coda.
+
+A cosa serve fmod?
+Restituisce il resto della divisione tra floating point: double fmod(double x, double y).
+#include <math.h>
+#include "float.h"
+
+double
+fmod(x, y)
+double x, y;
+{
+	double mod;
+
+	if (y == 0.0)         		      /* se il divisore e' zero	      */
+	{
+		return Infinity;              /* vedi float.h                 */
+	}
+
+	if (x == 0.0)			              /* se il dividendo e' zero      */
+	{
+		return 0.0;                   /* torna zero                   */
+	}
+
+	if (x < 0.0)                    /* se il dividendo e' negativo  */
+	{                               /* il valore iniziale del
+		mod = -x;                     /* modulo e' uguale al dividendo*/
+	}                               /* reso positivo                */
+	else                            /* altrimenti                   */
+	{                               /* il valore iniziale del modulo*/
+		mod = x;                      /* e' uguale ala dividendo      */
+	}
+
+	if (y < 0.0)                    /* se il divisore e' negativo   */
+	{
+		y = -y;                       /* diventa positivo             */
+	}
+
+	while(mod >= y)                 /* ciclo di sottrazione del     */
+	{                               /* divisore dal dividendo,      */
+		mod = mod-y;                  /* in uscita avremo un valore   */
+	}                               /* inferiore al dividendo       */
+
+	if (x < 0.0)                    /* se il dividendo e' negativo  */
+	{
+		return -mod;                  /* il modulo e' negativo        */
+	}
+
+	return mod;                     /* restituisce il modulo        */
+}
+
