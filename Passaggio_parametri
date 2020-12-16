@@ -53,6 +53,11 @@ _programma:
  che riceve un * char nel quale scrive '0', '1', il terminatore di stringa '\0' e ritorna 
  in HL il puntatore al vettore ricevuto:
  
+  	psect	text, global
+ 	global	_stringa, prg1, prg2
+ 
+ 		arg     equ     6       ; offeset primo argomento
+_stringa:
   		push	ix
 		ld	ix,0
 		add	ix,sp		; punta all'argomento
@@ -67,7 +72,7 @@ _programma:
 		dec	hl
 		dec	hl		; punta al primo carattere
 		ld	sp, ix
-		pop	iy
+		pop	ix
 		ret
 		
  
