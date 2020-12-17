@@ -6,12 +6,13 @@ Questo file fmod.obj è quello che bisogna poi aggiungere alla libreria.
 Per non creare ulteriore confusione con la libreria LIBF.LIB ho pensato di creare
 un'altra libreria dove agggiungere man mano i moduli previsti in ANSI-C ma assenti
 in LIBF.LIB:
-libr r libv.lib fmod.obj
+			libr r libv.lib fmod.obj
 L'opzione 'r' sta per 'replace', se un modulo da rimpiazzare non esiste nella
-libreria allora lo agggiunge in coda.
+libreria allora lo aggiunge in coda.
 
 A cosa serve fmod?
 Restituisce il resto della divisione tra floating point: double fmod(double x, double y).
+
 #include <math.h>
 #include "float.h"
 
@@ -106,11 +107,11 @@ _fmod:
 		
 						; test se Z negativo		
 		bit	7, h			; 1 = segno negativo, 0 = segno positivo
-		jp	z, avanti		; se bit7=0 -> flag z=1 quindi salta avanti
-		ld	a, 01h			; se bit=1 aggiorna il flag
+		jp	z, avanti		; se bit7 = 0 -> flag z = 1 quindi salta avanti
+		ld	a, 01h			; se bit7 = 1 aggiorna il flag
 		ld	(flagz), a      	; di Z negativo
 avanti:
-		res	7, h			; 0 = segno positivo di Z
+		res	7, h			; bit7 = 0: segno positivo di Z
 		ld	(memz), de		; salva Z
 		ld	(memz+2), hl
    						; carica il secondo argomento (X) in HL DE
@@ -124,7 +125,7 @@ avanti:
 		ld	a, l			; controlla se mantissa = 0
 		or	d              		; ovvero L D E contengono zeri
 		or	e
-		jp	z, denzero		; si, termina con risultato zero
+		jp	z, denzero		; si, termina con risultato infinito
 		res	7, h			; imposta X positivo 
 		ld	(memx), de		; salva X
 		ld	(memx+2), hl
@@ -132,7 +133,6 @@ avanti:
 		push	hl			; mette X nello stack
 		push	de
 		
-
 ;	Divisione float di libreria fldiv. Il numero in HLDE e' diviso
 ;	con il numero che risiede nello stack sotto all'indirizzo
 ;	di ritorno.
@@ -187,32 +187,36 @@ denzero:					; se denominatore nullo
 numzero:
 		ld	de, (zero)		; mette il valore 
 		ld	hl, (zero+2)		; floating point massimo
-		jp      fine			; ritorno in HL DE			
+		jp      fine			; ritorno in HL DE	
+; Segno del risultato in base ai segni degli argomenti Z e X. Ricordiamo che
+; bit7 = 0 significa numero positivo e analogamente bit7 = 1 significa numero negativo.
 ;    	 -------------------
-;	| Z | X | operazione|
+;	| Z | X | risultato |
 ;    	 -------------------
-;	| 0 | 0 |  res 7, h |
+;	| 0 | 0 |     0     |
 ;    	 -------------------
-;	| 0 | 1 |  res 7, h |  
+;	| 0 | 1 |     0     | 
 ;    	 -------------------
-;	| 1 | 1 |  set 7, h |
+;	| 1 | 1 |     1     |
 ;    	 -------------------
-;	| 1 | 0 |  set 7, h |
+;	| 1 | 0 |     1     |
 ;    	 -------------------
-;   notiamo che il segno del risultato è dato dal segno di Z:
+;   Notiamo che il segno del risultato è dato dal segno di Z:
 ;   * Z positivo risultato positivo
 ;   * Z negativo risultato negativo		
 fine1:
-		ld	a, (flagz)		; 
+		ld	a, (flagz)		; Verifica del segno del risultato
 		or	a			; 
-		jp	nz, zneg		; flagz=1 -> Z negativo
+		jp	nz, zneg		; flagz = 1 -> Z negativo
         	res	7, h		    	; altrimenti risultato positivo
 fine:	
-		ld      sp,ix			; procedura di uscita
-		pop	iy
-		ret
+		ld      sp, ix			; procedura di uscita
+		pop	ix
+		ret				; uscita
+		
 zneg:		set	7, h			; risultato negativo
 		jp	fine
+		
 flagz:	defb	0				;
 memz:	deff	0.0				;
 memx:	deff	0.0				;
