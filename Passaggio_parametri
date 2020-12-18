@@ -1,79 +1,93 @@
-Per passare i parametri ad una funzione scritta in assembler Z80, Hi-tech C prevede una procedura che
-a prima vista può apparire complessa ma come vedremo molto efficiente.
-Da come si vede nel manuale i parametri sono passati nello stack al di sopra dell'indirizzo di ritorno:
+To pass parameters to a function written in Z80 assembler, Hi-tech C provides a procedure that
+at first glance may appear complex but as we shall see very efficient.
+As you can see in the manual, the parameters are passed in the stack above the return address:
 
 |               |
 |       .       |
 |       .       |
-|   argomenti   |
-|    per la     |
-|   funzione    |
+|   arguments   |
+|    for the    |
+|   function    |
 |---------------|
 |      ix       |
 |---------------|
-| indirizzo di  |
-|   ritorno     |
+|    return     |
+|    address    |
 *---------------*   <--- stack pointer
 
-Quando una funzione in assembler è invocata dal programma in linguaggio C gli argomenti sono messi nello stack in ordine
-inverso. Abbiamo cioè che il primo argomento è nell'indirizzo di memoria più basso. Lo stesso accade per una routine in
-linguaggio C invocata da un programma in assembler.
-Nel caso di un solo parametro floating point, abbiamo:
+When an assembler function is invoked by the C language program, the arguments are placed on the stack in the following order
+reverse order. That is, we have that the first argument is in the lowest memory address. The same happens for a routine in
+C language routine invoked by an assembler program.
+In the case of a single floating point parameter, we have:
 			------------
-			*   segno   *	1 bit
+			*   sign   *	1 bit
 			*-----------*
-			* esponente *	7 bit
+			* exponent *	7 bit
 			*-----------*
-			* mantissa  *	24 bit normalizzato
+			* mantissa  *	24 bit normalized
                         -------------
- Il numero e' memorizzato con il segno nel byte piu' alto e la mantissa nel byte piu' basso.
- Per raccogliere il parametro dobbiamo usare il puntatore ix aggiornato con il puntatore stack più un offset.
- L'offset, rispetto allo stack pointer, da adottare vale 6 (2 byte per indirizzo di ritorno e 2 byte per ix)
- e altri 2 per il primo push che salva l'indice ix:
+ The number is stored with the sign in the highest byte and the mantissa in the lowest byte.
+ To collect the parameter we have to use the pointer ix updated with the stack pointer plus an offset.
+ The offset, with respect to the stack pointer, to be adopted is 6 (2 bytes for return address and 2 bytes for ix)
+ and another 2 for the first push that saves index ix:
  
  	psect	text, global
  	global	_programma, prg1, prg2
  
- 	arg     equ     6       ; offeset primo argomento
+ 	arg     equ     6        ; offeset first argument
 _programma:
- 		push	ix
-		ld		ix,0
-		add		ix,sp		; punta all'argomento
-		                      		; carica l'argomento in HLDE
-		ld		l,(ix+arg+0)    ; byte alto mantissa
-		ld		h,(ix+arg+1)	; segno + esponente
-		ld		e,(ix+arg+2)    ; byte medio mantissa
-		ld		d,(ix+arg+3)    ; byte basso mantissa
+        push    iy               ; procedure for parameter input
+        push    ix
+        ld      ix,0
+        add     ix,sp            ; points to the argument
+
+        ld      a, 00h           ;
+        ld      (flagz), a       ; flagz contains 0
+                                
+                                 ; loads the first argument (Z) in HL DE
+        ld      e,(ix+arg+0)     ; low byte mantissa
+        ld      d,(ix+arg+1)     ; middle byte mantissa
+        ld      l,(ix+arg+2)     ; high byte mantissa
+        ld      h,(ix+arg+3)     ; sign + exponent
+     
      ....
- Il ritorno del risultato della elaborazione è in HL DE.
+     
+        ld      sp,ix            ; exit procedure
+        pop     ix
+        pop     iy
+        ret
+ The return of the processing result is in HL DE.
  
- Nel caso di tipo word il valore torna in HL, long word in HL DE con la parte alta in HL.
- Gli interi sono in L col segno eventuale in H. 
- I puntatore a carattere occupano 2 byte e sono caricati in HL, ad esempio vediamo un modulo
- che riceve un * char nel quale scrive '0', '1', il terminatore di stringa '\0' e ritorna 
- in HL il puntatore al vettore ricevuto:
+ In the case of word type the value returns in HL, long word in HL DE with the top part in HL.
+ Integers are in L with any sign in H. 
+ Character pointers occupy 2 bytes and are loaded in HL, for example we see a module
+ module that receives a * char in which it writes '0', '1', the string terminator '\0' and returns 
+ in HL the pointer to the received vector:
  
   	psect	text, global
  	global	_stringa, prg1, prg2
  
- 		arg     equ     6       ; offeset primo argomento
-_stringa:
-  		push	ix
-		ld	ix,0
-		add	ix,sp		; punta all'argomento
-		ld	l,(ix+arg+0)    ; byte alto indirizzo
-		ld	h,(ix+arg+1)	; byte basso indirizzo
-		
-		ld	(hl), 48	; '0'
-		inc	hl
-		ld	(hl), 49	; '1'
-		inc	hl
-		ld	(hl), 0		; terminatore di stringa
-		dec	hl
-		dec	hl		; punta al primo carattere
-		ld	sp, ix
-		pop	ix
-		ret
+ 	arg     equ     6        ; offeset first argument
+        push    iy               ; procedure for parameter input
+        push    ix
+        ld      ix,0
+        add     ix,sp            ; points to the argument
+				 ; in HL the address of pointer
+	ld	l,(ix+arg+0)     ; high byte of address
+	ld	h,(ix+arg+1)	 ; low byte of address
+	
+	ld	(hl), 48	 ; '0'
+	inc	hl
+	ld	(hl), 49	 ; '1'
+	inc	hl
+	ld	(hl), 0		 ; string terminator
+	dec	hl
+	dec	hl		 ; HL point to first element of array
+	
+        ld      sp,ix            ; exit procedure
+        pop     ix
+        pop     iy
+        ret
 		
  
  
