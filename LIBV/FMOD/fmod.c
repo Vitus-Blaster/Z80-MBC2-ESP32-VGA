@@ -1,45 +1,47 @@
-#include <math.h>
-#include "float.h"
+#include < math.h > 
+#include " float.h"
 
 double
 fmod(x, y)
 double x, y;
 {
-    double mod;
+	double mode;
 
-    if (y == 0.0)                     /* se il divisore e' zero       */
-    {
-        return Infinity;              /* vedi float.h                 */
-    }
+	if (y = = 0.0)             /* if the divisor is zero          */
+	{
+		return Infinity;       /* see float.h                     */
+	}
 
-    if (x == 0.0)                     /* se il dividendo e' zero      */
-    {
-        return 0.0;                   /* torna zero                   */
-    }
+	if (x = = 0.0)             /* if the dividend is zero         */
+	{
+		return 0.0;            /* return zero                     */
+	}
 
-    if (x < 0.0)                      /* se il dividendo e' negativo  */
-    {                                 /* il valore iniziale del
-        mod = -x;                     /* modulo e' uguale al dividendo*/
-    }                                 /* reso positivo                */
-    else                              /* altrimenti                   */
-    {                                 /* il valore iniziale del modulo*/
-        mod = x;                      /* e' uguale al dividendo       */
-    }
+	if (x < 0.0)               /* if the dividend is negative     */
+	{
+		                       /* the initial value of the        */
+		mod = - x;             /* mod is equal to dividend        */
+	}                          /* but positive                    */
+	                           /* made positive                   */
+	else                       /* otherwise                       */
+	{                          /* the initial value of the module */
+		mod = x;               /* is equal to the dividend        */
+	}
 
-    if (y < 0.0)                      /* se il divisore e' negativo   */
-    {
-        y = -y;                       /* diventa positivo             */
-    }
+	if (y < 0.0)               /* if the divisor is negative      */
+	{
+		y = -y;	               /* becomes positive                */
+	}
 
-    while(mod >= y)                   /* ciclo di sottrazione del     */
-    {                                 /* divisore dal dividendo,      */
-        mod = mod-y;                  /* in uscita avremo un valore   */
-    }                                 /* inferiore al dividendo       */
+	while (mod > = y)          /* subtraction cycle of            */
+	{                          /* divisor from dividend,          */
+		mod = mod - y;         /* in output we will have a value  */
+	}                          /* lower than dividend             */
 
-    if (x < 0.0)                      /* se il dividendo e' negativo  */
-    {
-        return -mod;                  /* il modulo e' negativo        */
-    }
+	if (x < 0.0)               /* if the dividend was negative    */
+	{
+		return -mod;           /* the module is negative          */
+	}
 
-    return mod;                       /* restituisce il modulo        */
+	return mod;               /* returns the module              */
 }
