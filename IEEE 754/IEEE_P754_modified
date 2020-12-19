@@ -6,21 +6,21 @@ The bit for the sign is lapalissian: 1 is negative, 0 is positive.
 Let's see the 8 bits for the exponent: of the 256 (FFH) representable values it is established that 127 (7Fh)
 let be the exponent 0 i.e. 2^0. So we have 126 negative exponents and 127 positive exponents.
 
-   1    8        23 bit length
+   1    8        23 bits length
   +-+--------+-----------------------+
   |S|  Exp.  |     Mantissa          |
   +-+--------+-----------------------+
-31 30       22                       0 bit index
+ 31 30       22                       0 bit index
 
 The Hi-tech designers C instead decided to represent the Floating Points in single and double precision
 in the same way:
-  1     7        24 bit length
-  +-+--------+-----------------------+
-  |S| Exp.   |     Mantissa          |
-  +-+--------+-----------------------+
+  1     7        24 bits length
+  +-+-------+------------------------+
+  |S| Exp.  |     Mantissa           |
+  +-+-------+------------------------+
  31 30      23                       0 bit index
 
-This reduces the size of the exponent to 128 (65 is the zero exponent) but increases availability for mantissa.
+This reduces the size of the exponent to 128 (65 is decimal value for the zero exponent) but increases availability for mantissa.
 In addition, as we will see, plus exponent sign is tractable with the register H and the mantissa with the registers L D E.
 
 For example, consider the number 3489.0 stored at the address 01fdH:
@@ -31,18 +31,21 @@ For example, consider the number 3489.0 stored at the address 01fdH:
 in HL we will have 4C DA
 in DE we will have 10 00
 
+Or if consired separates, in H the sign and the exponent and in L D E the mantissa, so:
+H contain 0x4C and L D E contains 0xDA1000
+
 In H the bit7 is the sign (1 negative 0 positive) and the remaining 7 bits are for the exponent.
 7 bits distinguish 128 values for which 2^0 to 65 decimal value (1000001 binary):
 * values above 65 are positive powers
-* values below 65 are powerful negative
+* values below 65 are negative powers
 
-In the L and DE registers (24 bits) there is mantissa.
+In the L and DE registers (24 bits) we talked there is mantissa.
 
 Now we have:
 H = 0x4c or 0100 1100 where bit 7 (0) is the sign and the remaining 100 1100 is 76 decimal.
 Being 65 decimal equivalent to 2^0 we have that 76-65 = 11 is the exponent of two, so 2^11.
 L DE = 0xDA 0x10 and 0x00,  the mantissa in binary is 11011010 00010000 00000000 the first bit is 2^0, the second 2^-1 the third 2^-2 and so on,
-by multiplying the powers by the corresponding elements and adding the products we have:
+multiplying the powers by the corresponding elements and adding the products we have:
 1*1 + 1*1/2 + 0*1/4 + 1*1/8 + 1*1/16 + 0*1/32 + 1*1/64 + 0*1/128 + 0*1/256 + 0*1/512 + 0*1/1024 + 1*1/2048
 = 1,70361328125
 
