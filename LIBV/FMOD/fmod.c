@@ -33,15 +33,15 @@ double x, y;
 		y = -y;	               /* becomes positive                */
 	}
 
-	while (mod > = y)             /* subtraction cycle of            */
-	{                             /* divisor from dividend,          */
-		mod = mod - y;        /* in output we will have a value  */
-	}                             /* lower than dividend             */
+	while (mod > = y)              /* subtraction cycle of            */
+	{                              /* divisor from dividend,          */
+		mod = mod - y;         /* in output we will have a value  */
+	}                              /* lower than dividend             */
 
-	if (x < 0.0)                  /* if the dividend was negative    */
+	if (x < 0.0)                   /* if the dividend was negative    */
 	{
-		return -mod;          /* the module is negative          */
+		return -mod;           /* the module is negative          */
 	}
 
-	return mod;                   /* returns the module              */
+	return mod;                    /* returns the module              */
 }
