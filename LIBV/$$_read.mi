@@ -1,0 +1,5 @@
+The LIBC and LIBF libraries are not as complete as ANSI-C expects, so this library will include modules
+missing as I produce them.
+
+
+
