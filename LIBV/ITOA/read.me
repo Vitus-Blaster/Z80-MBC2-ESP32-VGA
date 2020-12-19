@@ -1,0 +1,6 @@
+Non-standard function not provided in ANSI-C.
+          char *  itoa ( int value, char * str, int base );
+Converts an integer value to a null-terminated string using the specified base and stores the result in the array given by str parameter.
+If base is 10 and value is negative, the resulting string is preceded with a minus sign (-). With any other base, value is always considered unsigned.
+str should be an array long enough to contain any possible value.
+
