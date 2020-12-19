@@ -1,52 +1,52 @@
-In questa parte parleremo della rappresentazione floating point adottata dai progettisti di Hi-tech C.
-In effetti somiglia molto alla rappresentazione IEEE P754 su 32 bit:
-1 bit per il segno, 8 bit per l'esponente e restanti 23 bit per la mantissa.
-Il bit per il segno è lapalissiano: 1 vale negativo, 0 vale positivo.
+In this part we will talk about the floating point representation adopted by the designers of Hi-tech C.
+In fact it looks a lot like the IEEE P754 32-bit representation:
+1 bit for the sign, 8 bits for the exponent and the remaining 23 bits for the mantissa.
+The bit for the sign is lapalissian: 1 is negative, 0 is positive.
 
-Vediamo gli 8 bit per l'esponente: dei 256 (FFH) valori rappresentabili si stabilisce che 127 (7Fh)
-sia l'esponente 0 cioè 2^0. Quindi abbiamo 126 esponenti negativi e 127 esponenti positivi.
+Let's see the 8 bits for the exponent: of the 256 (FFH) representable values it is established that 127 (7Fh)
+let be the exponent 0 i.e. 2^0. So we have 126 negative exponents and 127 positive exponents.
 
- 1     8               23               lunghezza in bit
-+-+--------+-----------------------+
-|S|  Esp.  |       Mantissa        |
-+-+--------+-----------------------+
-31 30      22                      0    indice dei bit
+   1    8        23 bit length
+  +-+--------+-----------------------+
+  |S|  Exp.  |     Mantissa          |
+  +-+--------+-----------------------+
+31 30       22                       0 bit index
 
-I progettisti Hi-tech C invece hanno deciso di rappresentare i floating point in singola e doppia precisione
-nello stesso modo:
- 1     7               24               lunghezza in bit
-+-+--------+-----------------------+
-|S|  Esp.  |       Mantissa        |
-+-+--------+-----------------------+
-31 30      23                      0    indice dei bit
+The Hi-tech designers C instead decided to represent the Floating Points in single and double precision
+in the same way:
+  1     7        24 bit length
+  +-+--------+-----------------------+
+  |S| Exp.   |     Mantissa          |
+  +-+--------+-----------------------+
+ 31 30      23                       0 bit index
 
-In questo modo diminuisce la dimensione dell'esponente riducendosi a 128 (65 è l'esponente zero) ma incrementa
-la disponibilità per la mantissa.
-In più, come vedremo, segno più esponente è trattabile con il registro H e la mantissa con i registri L D E.
+This reduces the size of the exponent to 128 (65 is the zero exponent) but increases availability for mantissa.
+In addition, as we will see, plus exponent sign is tractable with the register H and the mantissa with the registers L D E.
 
-Per esempio consideriamo il numero 3489.0 memorizzato all'indirizzo 01fdH:
- 01F2: 00 10 DA 4C
- ld de, (01f2h)
- ld hl, (01f4h)
- 
- in HL avremo 4C DA
- in DE avremo 10 00
+For example, consider the number 3489.0 stored at the address 01fdH:
+01F2: 00 10 DA 4C
+   ld de, (01f2h)
+   ld hl, (01f4h)
 
- In H il bit7 e' il segno (1 negativo 0 positivo) e i restanti 7 bit sono per l'esponente.
- 7 bit distinguono 128 valori per cui 2^0 al valore 65 decimale (1000001 binario):
- * i valori superiori a 65 sono potenze positive
- * i valori inferiori a 65 sono potente negative
+in HL we will have 4C DA
+in DE we will have 10 00
 
- nei registri L e DE (24 bit) c'e'  la mantissa
+In H the bit7 is the sign (1 negative 0 positive) and the remaining 7 bits are for the exponent.
+7 bits distinguish 128 values for which 2^0 to 65 decimal value (1000001 binary):
+* values above 65 are positive powers
+* values below 65 are powerful negative
 
- H = 0x4C ovvero 0100 1100 dove il bit 7 (0) e' il segno e il restante 100 1100 vale 76 decimale.
-     Essendo 65 decimale equivalente a 2^0 abbiamo che 76 - 65 = 11 e' l'esponente di due, quindi 2^11.
- L DE = 0xDA1 la mantissa in binario vale 11011010 00010000 00000000 il primo bit e' 2^0, il secondo 2^-1 il terzo 2^-2 e cosi' via,
-     moltiplicando le potenze per gli elementi corrispondenti e sommando i prodotti abbiamo:
-     1*1 + 1*1/2 + 0*1/4 + 1*1/8 + 1*1/16 + 0*1/32 + 1*1/64 + 0*1/128 + 0*1/256 + 0*1/512 + 0*1/1024 + 1*1/2048
-     = 1,70361328125
+In the L and DE registers (24 bits) there is mantissa.
 
-     0x4CDA01 in esadecimale diventa 1,70361328125 * 2^11 in base 2, ovvero 3489 in base decimale.
+Now we have:
+H = 0x4c or 0100 1100 where bit 7 (0) is the sign and the remaining 100 1100 is 76 decimal.
+Being 65 decimal equivalent to 2^0 we have that 76-65 = 11 is the exponent of two, so 2^11.
+L DE = 0xDA 0x10 and 0x00,  the mantissa in binary is 11011010 00010000 00000000 the first bit is 2^0, the second 2^-1 the third 2^-2 and so on,
+by multiplying the powers by the corresponding elements and adding the products we have:
+1*1 + 1*1/2 + 0*1/4 + 1*1/8 + 1*1/16 + 0*1/32 + 1*1/64 + 0*1/128 + 0*1/256 + 0*1/512 + 0*1/1024 + 1*1/2048
+= 1,70361328125
+
+0x4C 0xDA 0x10 0x00 in hexadecimal becomes 1.70361328125 * 2^11 in base 2, or 3489 in decimal base.
      
      
 
