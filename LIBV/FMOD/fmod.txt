@@ -1,5 +1,5 @@
 The first Library module I wrote was FMOD. I wrote it in C and compiled with Hi-tech C:
-			c3-v-o-c fmod.c -lf
+			c3 -v -o -c fmod.c -lf
 The -c option tells the compiler not to delete the intermediate obj file.
 This fmod file.obj is what you need to add to the library.
 In order not to create further confusion with the library LIBF.LIB I thought to create
