@@ -1,99 +1,98 @@
 ; double fmod(double z, double x)
-; ritorna il resto della divisione di z per x
+; return the remainder of the division of z by x
 ;
 ; fmod(z,x) = z - x * floor(z/x)
-; se x>0 allora  0 <= fmod(z,x) < x
-; se x<0 allora -x < fmod(z,x) <= 0
+; if x > 0 then  0 <= fmod (z,x) <  x
+; if x < 0 then -x <  fmod (z,x) <= 0
 ;
-; Formato di un numero floating point
-;            ------------
-;            *   segno   *    1 bit
+; Format of a floating point number as set by Hi-tech
+;             ------------
+;            *   sign    *    1 bit
 ;            *-----------*
-;            * esponente *    7 bit
+;            * exponent  *    7 bits
 ;            *-----------*
-;            * mantissa  *    24 bit normalizzato
-;                       -------------
-; Il numero e' memorizzato con il segno nel byte piu' alto e
-; la mantissa nel byte piu' basso
+;            * mantissa  *    24 bits normalized
+;             -----------
+; The number is stored with the sign in the highest byte and
+; the mantissa in the three lowest bytes
 
         psect    text, global
         global    _fmod, flsub, flmul, fldiv, fladd, fpnorm, _floor
 
-        arg     equ     6        ; offeset primo argomento
+        arg     equ     6        ; offeset first argument
 _fmod:
-        push    iy               ; procedura per ingresso parametri
+        push    iy               ; procedure for input parameters
         push    ix
         ld      ix,0
-        add     ix,sp            ; punta all'argomento
+        add     ix,sp            ; point to argument
 
         ld      a, 00h           ;
-        ld      (flagz), a       ; flagz contiene 0
+        ld      (flagz), a       ; flagz contains initial value 0
                                 
-                                 ; carica il primo argomento (Z) in HLDE
-        ld      e,(ix+arg+0)     ; byte basso mantissa
-        ld      d,(ix+arg+1)     ; byte medio mantissa
-        ld      l,(ix+arg+2)     ; byte alto mantissa
-        ld      h,(ix+arg+3)     ; segno + esponente
+                                 ; load first argument (Z) in HL DE
+        ld      e,(ix+arg+0)     ; mantissa Low byte
+        ld      d,(ix+arg+1)     ; mantissa Middle byte
+        ld      l,(ix+arg+2)     ; mantissa High byte
+        ld      h,(ix+arg+3)     ; sign + exponent
 
-        call    fpnorm           ; lo normalizza
+        call    fpnorm           ; normalizes it
 
-        ld      a, l             ; controlla se mantissa = 0
-        or      d                ; ovvero L D E contengono zeri
+        ld      a, l             ; check if mantissa is 0
+        or      d                ; i.e. L D and E contains zeros
         or      e
-        jp      z, numzero       ; si, termina con risultato zero
+        jp      z, numzero       ; yes, ends with zero result
         
-                                 ; test se Z negativo        
-        bit     7, h             ; 1 = segno negativo, 0 = segno positivo
-        jp      z, avanti        ; se bit7=0 -> flag z=1 quindi salta avanti
+                                 ; test if z is negative       
+        bit     7, h             ; 1 = negative sign, 0 = positive sign
+        jp      z, avanti        ; if bit7=0 then flag z=1 and skip forward
 
-				 ; bit7=1
-        ld      a, 01h           ; aggiorna il flag
-        ld      (flagz), a       ; di Z negativo
-        res     7, h             ; Z diventa positivo
+				 ; bit7 = 1
+        ld      a, 01h           ; update the flag
+        ld      (flagz), a       ; of Z was negative
+        res     7, h             ; Z becomes positive
 avanti:
-        ld      (memz), de       ; salva Z
+        ld      (memz), de       ; save Z
         ld      (memz+2), hl
 
-                                 ; carica il secondo argomento (X) in HL DE
-        ld      e,(ix+arg+4)     ; byte basso mantissa
-        ld      d,(ix+arg+5)     ; byte medio mantissa
-        ld      l,(ix+arg+6)     ; byte alto mantissa
-        ld      h,(ix+arg+7)     ; segno + esponente
+                                 ; load the second argument (X) in HL DE
+        ld      e,(ix+arg+4)     ; Low mantissa byte
+        ld      d,(ix+arg+5)     ; Middle mantissa bytes
+        ld      l,(ix+arg+6)     ; High mantissa bytes
+        ld      h,(ix+arg+7)     ; sign + exponent
 
-        call    fpnorm           ; lo normalizza
-
-        ld      a, l             ; controlla se mantissa = 0
-        or      d                ; ovvero L D E contengono zeri
+        call    fpnorm           ; normalizes it
+	
+        ld      a, l             ; check if mantissa is 0
+        or      d                ; i.e. L D and E contains zeros
         or      e
-        jp      z, denzero       ; si, termina con risultato zero
+        jp      z, denzero       ; yes, ends with zero result
         
-        res     7, h             ; rendiamo X positivo in ogni caso
-        ld      (memx), de       ; salva X
+        res     7, h             ; we make X positive in any way
+        ld      (memx), de       ; save X
         ld      (memx+2), hl
 
-        push    hl               ; mette X nello stack
+        push    hl               ; push X in the stack
         push    de
         
 
-;    Divisione float di libreria. Il numero in HL DE (Z) e' diviso
-;    con il numero che risiede nello stack (X) sotto all'indirizzo
-;    di ritorno.
-;    Il puntatore allo stack torna corretto e il risultato e' in HL DE.
-;    Vedere il sorgente round in float.as
-;            ( z / x )
+; Library float division. The HL number of (Z) is divided
+; with the number that resides in the stack (X) below the address return.
+; The pointer to the stack returns correct and the result is in HL DE.
+; See the source round in float.as
+;       (z / x )
 
         ld      de, (memz)
         ld      hl, (memz+2)
         call    fldiv
     
-;    Arrotonda il numero in HL DE all'unita' inferiore
-;    floor.c e' in libf.lib: double floor(double)
+; Rounds the number in HL DE to the bottom unit
+; floor.C is in libf.lib: double floor (double)
 ;            floor( z / x )
 
-        push    hl               ; passa l'argomento alla routine
-        push    de               ; tramite stack
-        call    _floor           ; floor(y)
-                                 ; restituisce il risultato in HL DE
+        push    hl               ; pass the argument to the routine
+        push    de               ; via stack
+        call    _floor           ; floor(.)
+                                 ; returns the result in HL DE
 ;
 ;    Moltiplicazione floating point. Il numero in HL DE e'
 ;    moltiplicato con il numero che risiede nello stack sotto
@@ -102,68 +101,66 @@ avanti:
 ;    Vedere il sorgente in flmul in float.as
 ;            x * floor( z / x )
 
-        push    hl               ; salva floor(z/x)
-        push    de               ; nello stack
+        push    hl               ; save floor(z/x)
+        push    de               ; in the stack
 
-        ld      de, (memx)       ; recupera X
+        ld      de, (memx)       ; retrieves  X
         ld      hl, (memx+2)
 
-        call    flmul            ; risultato in HL DE
+        call    flmul            ; result in HL DE
 
-;    Sottrazione floating point. Il valore nello stack
-;    e' sottratto da HL DE:  z - x = z + (-x)
-;    Vedere il sorgente in flsub in float.as
+; Floating point multiplication. The number in HL DE is multiplied by the number 
+; that resides in the stack below to the return address.
+; The pointer to the stack returns correct and the result C (in HL DE.
+; See the source in flmul in float.as
 ;           z - x * floor( z / x )
 
-        push    hl               ; salva x*(floor(z/x))
-        push    de               ; nello stack
+        push    hl               ; save x * floor (z / x)
+        push    de               ; in the stack
 
-        ld      de, (memz)       ; recupera Z
+        ld      de, (memz)       ; retrieves Z
         ld      hl, (memz+2)
 
         call    flsub
-                                 ; in HL DE abbiamo il risultato di fmod
-        jp      fine1            ; vai alla parte del controllo segno
-denzero:                         ; se denominatore nullo
-        ld      de, (over)       ; mette il valore
-        ld      hl, (over+2)     ; floating point massimo
+                                 ; in HL DE we have the result of fmod
+        jp      fine1            ; now go to the sign control part
+denzero:                         ; if denominator is equal to zero
+        ld      de, (over)       ; puts the value of
+        ld      hl, (over+2)     ; maximum floating point
         jp      fine             ; ritorno in HL DE
 numzero:
         ld      de, (zero)       ; mette il valore
         ld      hl, (zero+2)     ; floating point massimo
-        jp      fine             ; ritorno in HL DE
-;    -------------------
-;    | Z | X | operazione|
-;    -------------------
+        jp      fine             ; return of HL DE
+;    --------------------
+;    | Z | X | operation |
+;    --------------------
 ;    | 0 | 0 |  res 7, h |
-;    -------------------
+;    --------------------
 ;    | 0 | 1 |  res 7, h |  
-;    -------------------
+;    --------------------
 ;    | 1 | 1 |  set 7, h |
-;    -------------------
+;    --------------------
 ;    | 1 | 0 |  set 7, h |
-;    -------------------
-;   notiamo che il segno del risultato e' dato
-;   dal segno di Z:
-;   Z positivo risultato positivo
-;   Z negativo risultato negativo        
+;    --------------------
+;    We note that the sign of the result is given by the sign of Z:
+:    Z positive positive result
+;    Z negative negative result     
 fine1:
         ld      a, (flagz)       ;
         or      a                ;
-        jp      nz, zneg         ; flagz=1 -> Z negativo
-        res     7, h             ; altrimenti risultato positivo
+        jp      nz, zneg         ; flagz = 1 then Z negative and skip
+        res     7, h             ; otherwise positive
 fine:
-        ld      sp,ix            ; procedura di uscita
+        ld      sp,ix            ; exit procedure
         pop     ix
         pop     iy
         ret
 zneg:
-        set     7, h             ; risultato negativo
+        set     7, h             ; first argument was negative
         jp      fine
 flagz:  defb    0                ;
 memz:   deff    0.0              ;
 memx:   deff    0.0              ;
-over:   deff    1.6777217e07     ; infinito
+over:   deff    1.6777217e07     ; infinite
 zero:   deff    0.0              ;
-
-
