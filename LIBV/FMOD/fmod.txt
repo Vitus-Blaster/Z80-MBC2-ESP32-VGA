@@ -60,7 +60,7 @@ double x, y;
 	return mod;                    /* returns the module              */
 }
 
-Obj of this version takes up 336 bytes
+Obj of this version takes up 336 bytes.
 
 This module I took it up wanting to write it in assembler Z80. They helped a lot
 the routines contained in float.as. explanations, as in the previous program, are given line by line:
@@ -231,3 +231,6 @@ memx:   deff    0.0              ;
 over:   deff    1.6777217e07     ; infinite
 zero:   deff    0.0              ;
 
+Obj of this version takes up 750 bytes.
+
+Surprisingly the module compiled in C language is shorter than the assembled module!
