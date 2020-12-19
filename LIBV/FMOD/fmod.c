@@ -23,7 +23,7 @@ double x, y;
     }                                 /* reso positivo                */
     else                              /* altrimenti                   */
     {                                 /* il valore iniziale del modulo*/
-        mod = x;                      /* e' uguale ala dividendo      */
+        mod = x;                      /* e' uguale al dividendo       */
     }
 
     if (y < 0.0)                      /* se il divisore e' negativo   */
