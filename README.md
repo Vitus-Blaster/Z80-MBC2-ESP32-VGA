@@ -1,3 +1,4 @@
 # Hi-tech-C-3.09
-Compilatore C per CP/M-80
-Migliorie e programmazione avanzata.
+La mia opinione è che sia il miglior compilatore C per CP/M-80,
+un esatto equilibrio tra efficienza ed usabilità.
+
