@@ -21,7 +21,7 @@ in the same way:
  31 30      23                       0 bit index
 
 This reduces the size of the exponent to 128 (65 is decimal value for the zero exponent) but increases availability for mantissa.
-In addition, as we will see, plus exponent sign is tractable with the register H and the mantissa with the registers L D E.
+In addition, as we will see, plus exponent sign and exponent are tractable with the register H and the mantissa with the registers L DE.
 
 For example, consider the number 3489.0 stored at the address 01fdH:
 01F2: 00 10 DA 4C
