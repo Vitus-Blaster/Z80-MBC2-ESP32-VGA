@@ -1,12 +1,11 @@
 # Hi-tech-C-3.09
-La mia opinione è che sia il miglior compilatore C per CP/M-80,
-un esatto equilibrio tra efficienza ed usabilità.
+My opinion is that it is the best C compiler for CP / M-80,
+an exact balance between efficiency and usability.
 
-Nella cartella IEEE754 c'è la descrizione di come i tecnici Hi-tech 
-hanno implementato la rappresentazione IEEE754 (singola precisione)
-e degli esempi.
+In the IEEE754 folder there is the description of how Hi-tech technicians
+have implemented IEEE754 representation (single precision) and examples.
 
-Nelle cartelle LIBC e LIBF troverete i sorgenti dei moduli in C ed
-in assembler da compilare (i sorgenti sono in sorgenti.zip).
+In the LIBC and LIBF folders you will find the sources of the modules in C and
+in assembler to compile (the sources are in sources.zip).
 
-La cartella LIBV contiene le modifiche e le aggiunte alle librerie.
+The LIBV folder contains my implementations of modules that aren't in LIBC and LIBF.
