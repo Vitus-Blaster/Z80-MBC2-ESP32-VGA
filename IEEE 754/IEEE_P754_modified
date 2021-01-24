@@ -51,7 +51,7 @@ multiplying the powers by the corresponding elements and adding the products we 
 
 0x4C 0xDA 0x10 0x00 in hexadecimal becomes 1.70361328125 * 2^11 in base 2, or 3489 in decimal base.
      
-Let see now some numbers in that IEEEP754 implementation:
+Let see now some numbers in HTC IEEEP754 implementation:
 
 Real number: 9.223375e18
 S |7 bit exp| 24 bit mantissa                |
