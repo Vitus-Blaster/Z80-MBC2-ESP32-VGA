@@ -1,4 +1,4 @@
-In this part we will talk about the floating point representation adopted by the designers of Hi-tech C.
+In this part we will see about the floating point representation adopted by the designers of Hi-tech C.
 In fact it looks a lot like the IEEE P754 32-bit representation:
 1 bit for the sign, 8 bits for the exponent and the remaining 23 bits for the mantissa.
 The bit for the sign is lapalissian: 1 is negative, 0 is positive.
