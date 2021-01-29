@@ -1,6 +1,18 @@
 #include <stdio.h>
 #include <libv.h>
 
+void printBinary(unsigned int n, int i)
+{
+    int k;
+    for (k = i - 1; k >= 0; k--)
+    {
+        if ((n >> k) & 1)
+            printf("1");
+        else
+            printf("0");
+    }
+}
+
 typedef union
 {
     float f;
@@ -13,18 +25,6 @@ typedef union
         unsigned int sign: 1;
     } raw;
 } myfloat;
-
-void printBinary(unsigned int n, int i)
-{
-    int k;
-    for (k = i - 1; k >= 0; k--)
-    {
-        if ((n >> k) & 1)
-            printf("1");
-        else
-            printf("0");
-    }
-}
 
 void printIEEE(myfloat var)
 {
@@ -42,20 +42,24 @@ void printIEEE(myfloat var)
 int main()
 {
     int vett[24];
-    int j, k, num;
+    int j, k, num, espo;
     float numero;
+    float vero;
     myfloat var;
 
     printf("Numero reale :");
     scanf("%f", &var.f);
-
-    printf("Rappresentazione IEEE P754 modificata Hi-tech di %f : \n",
+    printf("\n");
+    printf("Rappresentazione IEEE P754 modificata Hi-tech\n",
            var.f);
+    printf("\n");
     printf("S |7 bit esp|  24 bit mantissa         |\n");
     printIEEE(var);
+
     printf("\n");
 
-    printf("Forma esadecimale: ");
+    printf("Forma esadecimale : ");
+
     j = var.raw.sign*128+var.raw.exponent;
     printf("%02x ",j);
     printf("%02x ",var.raw.mantissa2);
@@ -89,24 +93,30 @@ int main()
         else
             vett[k]=0;
     }
-    printf("\n");
 
     numero = 0;
     j=0;
     for (k = 23; k >= 0; k--)
     {
         numero = numero + vett[k]*1.0/power(2,j);
+
         j++;
     }
 
-    printf("Forma esponente 2: ");
+    printf("Forma esponente 2 : ");
 
     if (var.raw.sign==1)
         printf("-");
 
-    printf("%1.7f ",numero);
+    printf("%1.12f * ",numero);
 
     printf("2^%d \n",var.raw.exponent-65);
 
+    espo = var.raw.exponent-65;
+    vero = numero*power(2.0,(float)(espo));
+    printf("Forma esponente 10: ");
+    printf("%8.7e ",vero);
+
     return 0;
 }
+
