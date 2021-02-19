@@ -9,3 +9,6 @@ In the LIBC and LIBF folders you will find the sources of the modules in C and
 in assembler to compile (the sources are in sources.zip).
 
 The LIBV folder contains my implementations of modules that aren't in LIBC and LIBF.
+
+In parameter-passing  you will find the description and an example of how the compiler 
+receives and returns the parameters through the index register IX. 
