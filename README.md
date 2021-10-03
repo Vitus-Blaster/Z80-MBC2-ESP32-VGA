@@ -12,4 +12,5 @@ The LIBV folder contains my implementations of modules that aren't in LIBC and L
 
 In Parameters passing you will find the description and an example of how the compiler 
 receives and returns the parameters through the index register IX. 
-For more explanations follow me on hhtps://automatic.freevar.com 
+
+For more explanations follow me on htps://automatic.freevar.com 
