@@ -1,0 +1,37 @@
+;---------- LIBG.SUB ----------
+c -C -O gcurson.c
+c -C -O gcursoff.c
+c -C -O gpen.c
+c -C -O gpixel.c
+c -C -O gclear.c
+c -C -O gellipse.c
+c -C -O gfillelp.c
+c -C -O gpath.c
+c -C -O gfillpth.c
+c -C -O gscroll.c
+c -C -O gclrterm.c
+c -C -O gdraw.c
+c -C -O gbrush.c
+c -C -O grect.c
+c -C -O gfillrect.c
+c -C -O gline.c
+c -C -O gpoint.c
+LIBR R LIBG.LIB gcurson.OBJ
+LIBR R LIBG.LIB gcursoff.OBJ
+LIBR R LIBG.LIB gpen.OBJ
+LIBR R LIBG.LIB gpixel.OBJ
+LIBR R LIBG.LIB gclear.OBJ
+LIBR R LIBG.LIB gellipse.OBJ
+LIBR R LIBG.LIB gfillelp.OBJ
+LIBR R LIBG.LIB gpath.OBJ
+LIBR R LIBG.LIB gfillpth.OBJ
+LIBR R LIBG.LIB gscroll.OBJ
+LIBR R LIBG.LIB gclrterm.OBJ
+LIBR R LIBG.LIB gdraw.OBJ
+LIBR R LIBG.LIB gbrush.OBJ
+LIBR R LIBG.LIB grect.OBJ
+LIBR R LIBG.LIB gfillrect.OBJ
+LIBR R LIBG.LIB gline.obj
+LIBR R LIBG.LIB gpoint.obj
+;---------- fine ----------
+LIBR M LIBG.LIB
