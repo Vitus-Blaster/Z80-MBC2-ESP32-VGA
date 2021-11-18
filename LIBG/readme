@@ -2,3 +2,4 @@ This library collects invocations to primitive FabGL subroutines for easier use.
 
 Below are the individual modules to be filled in individually and then linked in the LIBG.LIB library
 
+To facilitate the task of building the library, here are the compilation directives in SUBMIT form.
