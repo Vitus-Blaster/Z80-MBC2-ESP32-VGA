@@ -1,0 +1,18 @@
+In this section we have a versione of BBCBasic recompiled with customized graphic (and audio) instructions for Fabgl’s VT100 video and ESP32 graphic terminal.
+The changes I have made currently are:
+
+MODE 0 | 1: text screen | graphic screen. The text screen is 80 columns by 24 lines and color characters. 
+The graphic extension is rigid and is fixed at 640 horizontal points by 480 vertical points.
+
+CLG: Screen cleaning in graphics mode.
+
+GCOL R, G, B: color setting of the dot or line indicating the intensity of red, green and blue.
+
+PLOT X, Y: lights up a colored dot in the graphic screen (see GLC).
+
+DRAW X1, Y1, X2, Y2: draws a colored line between the coordinate pairs.
+
+MOVE X, Y: scrolls x columns and y rows on a graphic page.
+
+SOUND TYPE, FREQUENCY, DURATION, VOLUME: emits a sound of type 0-sine 1-square 2-triangle 3-sawtooth 4-noise 5-vic noise, 
+frequency in Hertz, duration in milliseconds and volume between 0 and 127
